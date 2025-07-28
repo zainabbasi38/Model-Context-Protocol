@@ -8,10 +8,7 @@ class MCPClient:
         self.url = url
         self.stack = AsyncExitStack()
         self._sess = None
-    # async def list_tools(self):
-    #     async with self.session as session:
-    #         response = (await session.list_tools()).tools
-    #         return response
+    
         
 
     async def __aenter__(self):
@@ -30,15 +27,26 @@ class MCPClient:
     async def list_tools(self):
         return (await self._sess.list_tools()).tools
     
-    async def call_tools(self, tool_name, *args, **kwargs):
+    async def call_tools(self, tool_name, args: dict):
 
-        return await self._sess.call_tool(tool_name, *args, **kwargs)
+        return await self._sess.call_tool(tool_name, arguments=args)
 
 async def main():
     async with MCPClient("http://127.0.0.1:8000/mcp") as client:
         tools = await client.list_tools()
-        print(tools, "tools")
+        print("Available Tools:")
         for tool in tools:
-            print(tool)
+            print(f"- {tool.name}: {tool.description}")
+
+        # Call Weather-Tool
+        print("\nCalling Weather-Tool...")
+        weather_result = await client.call_tools("Weather-Tool", args={"city": "Lahore"})
+        print("Weather result:", weather_result.content[0].text)
+
+        # Call News-Tool
+        print("\nCalling News-Tool...")
+        news_result = await client.call_tools("News-Tool", args={"news": "AI"})
+        print("News result:", news_result.content[0].text)
+
 
 asyncio.run(main())
