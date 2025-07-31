@@ -2,7 +2,7 @@ import asyncio
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession, types
 from contextlib import AsyncExitStack
-
+from typing import List
 class MCPClient:
     def __init__(self, url):
         self.url = url
@@ -24,10 +24,10 @@ class MCPClient:
     async def __aexit__(self, *args):
         await self.stack.aclose()
 
-    async def list_tools(self):
+    async def list_tools(self) -> List[types.Tool]:
         return (await self._sess.list_tools()).tools
     
-    async def call_tools(self, tool_name, args: dict):
+    async def call_tools(self, tool_name, args: dict)-> types.CallToolResult:
 
         return await self._sess.call_tool(tool_name, arguments=args)
 
