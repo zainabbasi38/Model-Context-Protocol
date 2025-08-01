@@ -15,7 +15,7 @@ def list_docs():
     return list(docs.keys())
     # return docs.get("intro")
 
-@mcp.resource("docs://document/{doc_id}", mime_type="application/json")
+@mcp.resource("docs://document/{doc_id}")
 def read_docs(doc_id):
     """Read a specific doc"""
     return docs[doc_id]

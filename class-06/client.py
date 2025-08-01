@@ -59,16 +59,23 @@ class MCPClient:
             elif response.mimeType == "text/plain":
                 return response.text
         # print("READ RESOURCES DICT",result.__dict__)
-        
-print("Hi")
 
+    async def list_prompts(self):
+        result = await self._sess.list_prompts()
+        print("RESULT OF PROMPTS", result)
+        return result.prompts[0].description
+    
+    async def get_prompt(self , name , args:dict[str,str]):
+        return await self._sess.get_prompt(name ,args )
 async def main():
     async with MCPClient("http://127.0.0.1:8000/mcp") as client:
         tools = await client.list_tools()
         print("Tools: ", tools)
-
+        
+        prompts = await client.get_prompt("format", {"doc_id": "intro"})
+        print("prmpts", prompts)
         #Getting list resources
-        resources = await client.list_resources()
+       
         # print(resources)
         
         # temp_resources = resources[0].uri
@@ -76,15 +83,6 @@ async def main():
         # read_resources = await client.read_resources(temp_resources)
         # print("READ RESOURCES  ",read_resources)  
 
-        templates_resources = await client.list_resource_template()
-        print("\n")
-        print(templates_resources)
-        print("\n")
-        print(templates_resources[0].uriTemplate)
-        uri_temp = templates_resources[0].uriTemplate.replace("{doc_id}", "readme")
-        print(uri_temp)
-        read_template_resource = await client.read_resources(uri_temp)
-        print(read_template_resource)
-
+     
 
 asyncio.run(main())
